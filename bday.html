@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For Vinzz ❤️</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@1,500;700&family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- Base Styles --- */
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #0f0518 0%, #2b0a1a 50%, #150824 100%);
+            overflow: hidden;
+            height: 100vh;
+            color: white;
+            position: relative;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* --- GPU Acceleration Layer for Wrapper --- */
+        #app-wrapper {
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, #0f0518 0%, #2b0a1a 50%, #150824 100%);
+            z-index: 10;
+            width: 100%; height: 100%;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+        }
+
+        .handwriting { font-family: 'Dancing Script', cursive; }
+        .serif { font-family: 'Playfair Display', serif; }
+        .cinzel { font-family: 'Cinzel', serif; }
+
+        /* --- STAGE 1: QUESTION SCREEN --- */
+        #password-screen {
+            position: absolute; inset: 0; z-index: 100;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(15, 5, 10, 0.95);
+            backdrop-filter: blur(15px);
+            transition: opacity 1s ease-in-out;
+            padding: 20px;
+        }
+
+        .lock-heart-container {
+            position: relative;
+            width: 100px; height: 100px;
+            margin-bottom: 30px;
+            filter: drop-shadow(0 0 25px rgba(255, 0, 80, 0.6));
+            will-change: transform, opacity, filter;
+        }
+        
+        .heart-svg {
+            width: 100%; height: 100%;
+            fill: url(#gemGradient);
+            animation: heartPulse 3s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes heartPulse {
+            0%, 100% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.08); filter: brightness(1.2); }
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            text-align: center;
+            margin-bottom: 25px;
+            color: #ffb7c5;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            line-height: 1.4;
+            max-width: 90%;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-wrapper {
+            display: flex; flex-direction: column; align-items: center;
+            width: 100%; max-width: 320px;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-group {
+            display: flex; gap: 10px; width: 100%;
+            position: relative;
+        }
+
+        #magic-word {
+            flex-grow: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 30px;
+            padding: 15px 25px;
+            color: white; font-size: 1.1rem;
+            outline: none; text-align: center;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        #magic-word:focus {
+            background: rgba(255,255,255,0.1);
+            border-color: #ff4f8b;
+            box-shadow: 0 0 20px rgba(255, 79, 139, 0.4);
+        }
+
+        #magic-word::placeholder { color: rgba(255,255,255,0.4); }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #ff4f8b, #d6336c);
+            border: none; border-radius: 50%;
+            width: 55px; height: 55px;
+            color: white; font-size: 1.2rem;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 15px rgba(255, 79, 139, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .submit-btn:active { transform: scale(0.9); }
+
+        .error-msg {
+            color: #ff4444; font-size: 0.9rem; margin-top: 15px;
+            opacity: 0; transition: opacity 0.3s;
+            height: 20px; /* reserve space */
+        }
+
+        .shake { animation: inputShake 0.4s cubic-bezier(.36,.07,.19,.97) both; border-color: #ff4444 !important; }
+        @keyframes inputShake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0); } 40%, 60% { transform: translate3d(6px, 0, 0); } }
+
+        /* UNLOCK ANIMATION (CINEMATIC & BUTTER SMOOTH) */
+        .unlocking .question-text, .unlocking .input-wrapper {
+            opacity: 0; transform: translateY(30px); pointer-events: none;
+        }
+        
+        .unlocking .lock-heart-container {
+            /* The Heart breathes in, then erupts */
+            animation: heartCinematicZoom 2s forwards cubic-bezier(0.8, 0, 0.1, 1);
+        }
+
+        @keyframes heartCinematicZoom {
+            0% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 25px rgba(255, 0, 80, 0.6)); }
+            25% { transform: scale(0.8); opacity: 1; filter: drop-shadow(0 0 10px rgba(255, 0, 80, 0.9)); } /* Anticipation deep breath */
+            100% { transform: scale(150); opacity: 0; filter: blur(5px); } /* Massive smooth expansion */
+        }
+
+        /* --- STAGE 2: SLIDESHOW --- */
+        #slideshow-screen {
+            position: absolute; inset: 0; z-index: 90; display: none; 
+            flex-direction: column; align-items: center; justify-content: center;
+            background: black; text-align: center;
+        }
+        .slide-text { opacity: 0; transform: translateY(30px); transition: all 1.2s cubic-bezier(0.2, 0.8, 0.2, 1); position: absolute; width: 100%; padding: 0 20px; }
+        .slide-text.active { opacity: 1; transform: translateY(0); }
+        .slide-number { 
+            font-size: 4.5rem; font-weight: 800; 
+            background: linear-gradient(to right, #ff758c, #ffffff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+            display: block; margin-bottom: 15px;
+            text-shadow: 0 10px 30px rgba(255,117,140,0.3);
+        }
+        .slide-desc { font-size: 1.6rem; color: #ddd; font-family: 'Dancing Script', cursive; letter-spacing: 1px; }
+
+        /* --- STAGE 3 & 4: MAIN CONTENT --- */
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); 
+            border: 1px solid rgba(255, 255, 255, 0.12); 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
+        }
+        .float-img { animation: float 6s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+        .envelope-shake { animation: shake 2.5s infinite ease-in-out; }
+        @keyframes shake { 0%, 100% { transform: rotate(0deg); } 10% { transform: rotate(5deg); } 20% { transform: rotate(-5deg); } }
+        .fade-in-up { animation: fadeInUp 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .shimmer-btn { 
+            background: linear-gradient(45deg, #ff4f8b, #d6336c, #ff9a9e, #ff4f8b); 
+            background-size: 300% 300%; 
+            animation: gradientMove 4s ease infinite; 
+        }
+        @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        /* --- STAGE 5: PROPOSAL --- */
+        #proposal-screen { background: radial-gradient(circle at center, rgba(60, 10, 30, 0.95), rgba(0, 0, 0, 1)); backdrop-filter: blur(20px); z-index: 200; }
+        .proposal-card { 
+            background: linear-gradient(180deg, rgba(30,5,15,0.85) 0%, rgba(10,2,5,0.95) 100%); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            box-shadow: 0 0 50px rgba(0,0,0,0.8), inset 0 0 30px rgba(255, 100, 150, 0.05); 
+            transform: scale(0.9); opacity: 0; 
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); 
+        }
+        .proposal-active .proposal-card { transform: scale(1); opacity: 1; }
+        
+        .swise-container { margin: 25px 0; border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 15px 0; }
+        .swise-text { font-size: 0.8rem; letter-spacing: 2px; color: #ffb7c5; text-transform: uppercase; line-height: 1.6; font-weight: 600; }
+        
+        .btn-yes { 
+            background: linear-gradient(90deg, #ff1a66, #ff4081, #ff1a66); 
+            background-size: 200% auto; 
+            box-shadow: 0 4px 25px rgba(255, 26, 102, 0.6); 
+            transition: all 0.5s; 
+            animation: gradientAnim 2s infinite linear; 
+            position: relative; overflow: hidden; 
+        }
+        .btn-yes:active { transform: scale(0.96); }
+        @keyframes gradientAnim { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
+        
+        .btn-think { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.7); transition: 0.3s; }
+        .btn-think:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); color: white; }
+
+        .btn-no { background: transparent; border: 1px solid rgba(255,50,50,0.2); color: rgba(255,100,100,0.5); transition: 0.3s; font-size: 0.8rem; margin-top: 15px; }
+        .btn-no:hover { background: rgba(255,0,0,0.1); border-color: rgba(255,50,50,0.5); color: #ff5555; }
+
+        /* --- STAGE 6: SUCCESS --- */
+        #success-screen { position: absolute; inset: 0; z-index: 300; display: none; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle, rgba(50,10,30,0.7) 0%, rgba(0,0,0,0.95) 100%); pointer-events: none; }
+        .final-msg-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 215, 0, 0.3); backdrop-filter: blur(25px); padding: 40px; border-radius: 30px; text-align: center; max-width: 90%; opacity: 0; transform: translateY(30px); box-shadow: 0 0 80px rgba(255, 100, 150, 0.3); transition: opacity 1s, transform 1s; }
+        .final-text { font-family: 'Dancing Script', cursive; font-size: 2.2rem; color: #fff; line-height: 1.5; text-shadow: 0 2px 10px rgba(255, 105, 180, 0.5); }
+        .particle { position: absolute; border-radius: 50%; pointer-events: none; animation: pop 1s ease-out forwards; }
+        @keyframes pop { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
+
+        /* --- DUSTBIN / REJECT ANIMATION (Smoother) --- */
+        @keyframes trashCrumple {
+            0% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+            30% { transform: scale(0.8) rotate(5deg); filter: brightness(0.7) grayscale(0.3); }
+            60% { transform: scale(0.4) rotate(-10deg); opacity: 1; }
+            100% { transform: scale(0) rotate(20deg) translateY(1000px); opacity: 0; }
+        }
+        
+        .trash-animation {
+            animation: trashCrumple 1.8s forwards cubic-bezier(0.6, -0.28, 0.735, 0.045);
+            transform-origin: center center;
+            will-change: transform, opacity, filter;
+        }
+
+        #void-screen {
+            position: fixed; inset: 0; background: black; z-index: 999;
+            display: none; align-items: center; justify-content: center;
+            flex-direction: column; opacity: 0; transition: opacity 2s ease-in;
+        }
+        .void-active { opacity: 1 !important; }
+        
+        .broken-heart { font-size: 5rem; animation: breakHeart 3s forwards ease-out; margin-bottom: 25px; display: block;}
+        .void-text { 
+            font-family: 'Cinzel', serif; color: rgba(255,255,255,0.6); 
+            font-size: 1.3rem; line-height: 1.8; letter-spacing: 2px;
+            text-align: center;
+            animation: fadeInUpVoid 3s forwards 1s; opacity: 0;
+        }
+        
+        @keyframes breakHeart { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); opacity: 0.6; filter: grayscale(1); } }
+        @keyframes fadeInUpVoid { from { opacity: 0; transform: translateY(20px); } to { opacity: 0.8; transform: translateY(0); } }
+
+        /* --- TOAST --- */
+        #custom-toast {
+            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: rgba(255,255,255,0.95); color: #333; padding: 15px 30px; border-radius: 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4); font-weight: 700; opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 500; text-align: center; pointer-events: none;
+        }
+        #custom-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* Utils */
+        #bg-canvas { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+        .content-layer { position: relative; z-index: 10; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- WRAPPER FOR ALIVE CONTENT (TO CRUMPLE IT) -->
+    <div id="app-wrapper">
+        
+        <canvas id="bg-canvas"></canvas>
+        <audio id="bg-music" loop>
+            <!-- LOCAL FILE INJECTED HERE -->
+            <source src="file:///C:/Users/Yoghes/OneDrive/Desktop/bday/perfect_ed_sheeran.mp3" type="audio/mp3">
+        </audio>
+
+        <!-- STAGE 1: THE MAGIC WORD SCREEN -->
+        <div id="password-screen">
+            <!-- SVG Gradient -->
+            <svg style="width:0;height:0;position:absolute;" aria-hidden="true">
+                <linearGradient id="gemGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ff99bb;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#ff0044;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#660022;stop-opacity:1" />
+                </linearGradient>
+            </svg>
+
+            <div class="lock-heart-container">
+                <svg viewBox="0 0 24 24" class="heart-svg">
+                   <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                   <path d="M16.5 4c-1.74 0-3.41.81-4.5 2.09C10.91 4.81 9.24 4 7.5 4 4.42 4 2 6.42 2 9.5c0 1.25.38 2.41 1.03 3.37.16-.62.53-1.18 1.05-1.61 2.3-1.9 4.38-2.58 6.92-2.26 2.54.32 4.5 2.5 5.5 5 1 .62 2.5.62 3.5 0 .65-.96 1.03-2.12 1.03-3.37 0-3.08-2.42-5.5-5.5-5.5z" fill="rgba(255,255,255,0.3)"/>
+                </svg>
+            </div>
+
+            <h2 class="question-text">Enter the word that you mostly mentioned to me??</h2>
+            
+            <div class="input-wrapper">
+                <div class="input-group">
+                    <input type="text" id="magic-word" placeholder="Type here..." autocomplete="off">
+                    <button class="submit-btn" onclick="checkWord()">
+                        <!-- Modern Arrow SVG (Replaced Star) -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </div>
+                <p id="error-msg" class="error-msg">Hmm, that's not quite right...</p>
+            </div>
+        </div>
+
+        <!-- STAGE 2: SLIDESHOW -->
+        <div id="slideshow-screen"><div class="slide-text" id="slide-content"></div></div>
+
+        <!-- STAGE 3: ENVELOPE (PERFECTLY CENTERED) -->
+        <div id="intro-screen" class="content-layer hidden absolute inset-0 flex-col items-center justify-center text-center z-50 w-full">
+            <div class="cursor-pointer group relative flex flex-col items-center justify-center" onclick="openEnvelope()">
+                <div class="absolute inset-0 bg-pink-500 blur-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-500 rounded-full"></div>
+                <div class="envelope-shake text-9xl mb-6 relative drop-shadow-2xl">💌</div>
+                <p class="text-2xl font-light tracking-[0.2em] uppercase text-pink-100">I have a message for you!!</p>
+                <p class="text-sm mt-3 text-pink-300 font-medium animate-pulse">(Tap to Open)</p>
+            </div>
+        </div>
+
+        <!-- STAGE 4: MAIN CARD (PERFECTLY CENTERED) -->
+        <div id="main-card" class="content-layer opacity-0 hidden absolute inset-0 flex-col items-center justify-center transition-all duration-1000 z-50 w-full">
+            <div class="glass-card rounded-[2rem] p-8 text-center border-t border-white/20 relative overflow-hidden w-11/12 max-w-lg mx-auto">
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-1 bg-gradient-to-r from-transparent via-pink-400 to-transparent opacity-50"></div>
+                <div class="float-img relative w-40 h-40 mx-auto mb-6 mt-2">
+                    <div class="absolute inset-0 bg-blue-400 rounded-full blur-xl opacity-30"></div>
+                    <!-- LOCAL IMAGE INJECTED HERE -->
+                    <img src="file:///C:/Users/Yoghes/OneDrive/Desktop/bday/image.jpg" alt="Memory" class="relative w-full h-full object-cover rounded-full border-[4px] border-white/30 shadow-2xl">
+                </div>
+                <h1 class="handwriting text-5xl mb-2 text-pink-200 drop-shadow-lg">Happy Birthday</h1>
+                <h2 class="text-4xl tracking-wide font-extrabold text-white mb-8 drop-shadow-md">Vinzz!</h2>
+                <div class="bg-black/20 rounded-xl p-6 mb-4 border border-white/5">
+                    <div class="min-h-[80px] flex items-center justify-center">
+                        <p id="typing-text" class="text-xl leading-relaxed text-pink-50 italic font-light"></p>
+                    </div>
+                    <div class="w-full text-right mt-4 pr-2 opacity-0 fade-in-up" style="animation-delay: 5s;">
+                        <span class="handwriting text-2xl text-pink-300">~ by yokii</span>
+                    </div>
+                </div>
+                <button onclick="revealProposal()" class="mt-4 w-full py-4 rounded-2xl text-white font-bold text-lg shadow-xl transform transition hover:scale-[1.02] active:scale-95 shimmer-btn border border-white/20">
+                    I have a question...
+                </button>
+            </div>
+        </div>
+
+        <!-- STAGE 5: PROPOSAL OVERLAY -->
+        <div id="proposal-screen" class="content-layer hidden fixed inset-0 flex flex-col items-center justify-center">
+            <div id="p-card" class="proposal-card px-6 py-10 rounded-[2.5rem] text-center w-11/12 max-w-sm relative overflow-hidden">
+                <div class="ring-container" style="position:relative; width:80px; height:80px; margin:0 auto 15px;">
+                    <div style="position:absolute; inset:-20px; background:radial-gradient(circle,rgba(255,255,255,0.4)0%,transparent 70%); animation:pulse-light 2s infinite; border-radius:50%;"></div>
+                    <div style="font-size:4rem; position:relative; z-index:10; animation:float-ring 3s ease-in-out infinite;">💎</div>
+                </div>
+                <h1 class="serif text-3xl mb-4 font-bold text-white drop-shadow-lg leading-tight">Will you be mine <br> forever?</h1>
+                <p class="serif text-pink-100/80 italic text-md mb-5 px-4">"Not just for today, but for every sunrise and sunset of my life."</p>
+                <div class="swise-container">
+                    <p class="swise-text">SWISE IS WAITING FOR US TO INVITE<br>US AS THE PERFECT COUPLE</p>
+                </div>
+                <div class="flex flex-col gap-3 w-full mt-4 relative">
+                    <button id="yes-btn" onclick="acceptProposal(event)" class="btn-yes w-full py-4 rounded-full text-white font-bold text-lg tracking-wide shadow-lg">YES, I WILL! 💖</button>
+                    
+                    <div class="flex flex-col items-center gap-2 w-full">
+                        <button id="think-btn" onclick="handleThink(event)" class="btn-think w-full py-3 rounded-full text-sm font-medium tracking-wide">Let me think...</button>
+                        <button onclick="rejectProposal()" class="btn-no px-4 py-1 rounded-full">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STAGE 6: SUCCESS SCREEN -->
+        <div id="success-screen">
+            <div class="final-msg-card">
+                <p id="final-text" class="final-text"></p>
+            </div>
+        </div>
+
+        <!-- TOAST NOTIFICATION -->
+        <div id="custom-toast">Sure, I'm waiting for youuu!! ❤️</div>
+
+    </div> <!-- END APP WRAPPER -->
+
+    <!-- THE VOID (OUTSIDE WRAPPER) -->
+    <div id="void-screen">
+        <div class="broken-heart-container">
+            <span class="broken-icon broken-heart">💔</span>
+            <p class="void-text">
+                Happy Birthday !! <br> 
+                Be happy with your loved one...
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // CONFIG
+        const startDate = new Date("2008-02-27T00:00:00");
+        const audio = document.getElementById('bg-music');
+        audio.volume = 0.5;
+
+        // 1. INPUT SCREEN LOGIC
+        const acceptedWords = [
+            "pani puri", "ice cream", "money heist", "swiss", 
+            "switzerland", "!!", "!", "broo", "munch", "bro"
+        ];
+        
+        const inputField = document.getElementById('magic-word');
+        const pwdScreen = document.getElementById('password-screen');
+        const errorMsg = document.getElementById('error-msg');
+
+        // Play audio on first keystroke
+        inputField.addEventListener('input', () => {
+            if (audio.paused) audio.play().catch(() => {});
+        });
+
+        // Handle Enter key
+        inputField.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                checkWord();
+            }
+        });
+
+        function checkWord() {
+            if (audio.paused) audio.play().catch(() => {});
+
+            const val = inputField.value.trim().toLowerCase();
+            
+            if (acceptedWords.includes(val)) {
+                // Success - Hide error and trigger massive zoom
+                errorMsg.style.opacity = '0';
+                inputField.blur(); // dismiss keyboard on mobile
+                
+                pwdScreen.classList.add('unlocking');
+                
+                // Transition timing matches the 2s CSS animation
+                setTimeout(() => {
+                    pwdScreen.style.opacity = '0';
+                    setTimeout(() => { 
+                        pwdScreen.style.display = 'none'; 
+                        startSlideshow(); 
+                    }, 800);
+                }, 1800);
+            } else {
+                // Error - Shake and show message
+                inputField.classList.add('shake');
+                errorMsg.style.opacity = '1';
+                
+                setTimeout(() => {
+                    inputField.classList.remove('shake');
+                }, 400);
+            }
+        }
+
+        // 2. SLIDESHOW
+        function startSlideshow() {
+            const ss = document.getElementById('slideshow-screen');
+            ss.style.display = 'flex';
+            const sc = document.getElementById('slide-content');
+            const now = new Date();
+            const diff = now - startDate;
+            const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+            const months = Math.floor(diff / (1000 * 60 * 60 * 24 * 30.44));
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const slides = [
+                { val: "27.02.2008", desc: "The day the world got brighter ✨" },
+                { val: years, desc: "Years of existence" },
+                { val: months.toLocaleString(), desc: "Months of sunshine" },
+                { val: days.toLocaleString(), desc: "Days of smiles" },
+                { val: hours.toLocaleString(), desc: "Hours of memories" },
+                { val: "Every Second", desc: "I cherish with you ❤️" }
+            ];
+            let i = 0;
+            function showSlide() {
+                if (i >= slides.length) {
+                    ss.style.opacity = '0';
+                    ss.style.transition = 'opacity 1.5s ease';
+                    setTimeout(() => { ss.style.display = 'none'; showEnvelope(); }, 1500);
+                    return;
+                }
+                sc.innerHTML = `<span class="slide-number">${slides[i].val}</span><span class="slide-desc">${slides[i].desc}</span>`;
+                sc.classList.add('active');
+                setTimeout(() => { sc.classList.remove('active'); i++; setTimeout(showSlide, 800); }, 2500);
+            }
+            setTimeout(showSlide, 500);
+        }
+
+        // 3. ENVELOPE (FLEXBOX CENTERED)
+        function showEnvelope() {
+            const intro = document.getElementById('intro-screen');
+            intro.classList.remove('hidden');
+            intro.classList.add('flex', 'fade-in-up');
+        }
+        function openEnvelope() {
+            const intro = document.getElementById('intro-screen');
+            intro.style.transition = "opacity 0.8s ease";
+            intro.style.opacity = '0';
+            setTimeout(() => {
+                intro.style.display = 'none';
+                const card = document.getElementById('main-card');
+                card.classList.remove('hidden', 'opacity-0');
+                card.classList.add('flex', 'fade-in-up');
+                setTimeout(startTyping, 500);
+            }, 800);
+        }
+
+        // 4. TYPING
+        const message = "On this special day, I realized something... Life is beautiful, but it's meaningless without you. You are my calm in the chaos and my favorite dream.";
+        const typeEl = document.getElementById('typing-text');
+        let charIndex = 0;
+        function startTyping() {
+            if (charIndex < message.length) {
+                typeEl.innerHTML += message.charAt(charIndex);
+                charIndex++;
+                setTimeout(startTyping, 45); // slightly slower typing
+            }
+        }
+
+        // 5. PROPOSAL
+        function revealProposal() {
+            const proposal = document.getElementById('proposal-screen');
+            proposal.classList.remove('hidden');
+            proposal.classList.add('flex'); 
+            setTimeout(() => { proposal.classList.add('proposal-active'); }, 50);
+        }
+
+        // HANDLERS
+        function handleThink(e) {
+            const toast = document.getElementById('custom-toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function rejectProposal() {
+            const wrapper = document.getElementById('app-wrapper');
+            wrapper.classList.add('trash-animation');
+            
+            let vol = 0.5;
+            const fade = setInterval(() => {
+                if(vol > 0) {
+                    vol -= 0.05;
+                    audio.volume = Math.max(0, vol);
+                } else {
+                    clearInterval(fade);
+                    audio.pause();
+                }
+            }, 100);
+
+            const voidScreen = document.getElementById('void-screen');
+            voidScreen.style.display = 'flex';
+            setTimeout(() => {
+                voidScreen.classList.add('void-active');
+            }, 1500);
+        }
+
+        function acceptProposal(e) {
+            const btn = document.getElementById('yes-btn');
+            const rect = btn.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for(let i=0; i<30; i++) createButtonParticle(centerX, centerY);
+
+            const pCard = document.getElementById('p-card');
+            pCard.style.transition = "all 0.8s cubic-bezier(0.4, 0, 0.2, 1)";
+            pCard.style.transform = "scale(1.15)";
+            pCard.style.opacity = "0";
+
+            setTimeout(() => {
+                document.getElementById('proposal-screen').style.display = 'none';
+                const successScreen = document.getElementById('success-screen');
+                successScreen.style.display = 'flex';
+                
+                setTimeout(() => {
+                    const finalCard = document.querySelector('.final-msg-card');
+                    finalCard.style.opacity = "1";
+                    finalCard.style.transform = "translateY(0)";
+                    typeWriterFinal();
+                }, 200);
+
+                isFireworkTime = true;
+                setInterval(launchFireworks, 250);
+            }, 900);
+        }
+
+        function createButtonParticle(x, y) {
+            const p = document.createElement('div');
+            p.classList.add('particle');
+            document.body.appendChild(p);
+            const size = Math.random() * 12 + 6;
+            p.style.width = `${size}px`; p.style.height = `${size}px`;
+            p.style.background = `hsl(${Math.random() * 60 + 320}, 100%, 75%)`;
+            p.style.left = `${x}px`; p.style.top = `${y}px`;
+            const tx = (Math.random() - 0.5) * 400;
+            const ty = (Math.random() - 0.5) * 400;
+            p.style.setProperty('--tx', `${tx}px`);
+            p.style.setProperty('--ty', `${ty}px`);
+            setTimeout(() => p.remove(), 1000);
+        }
+
+        const finalText = "May we don't have the much memories now but I'm sure we'll make beautiful memories together ❤️";
+        const finalEl = document.getElementById('final-text');
+        let fIndex = 0;
+        function typeWriterFinal() {
+            if (fIndex < finalText.length) {
+                finalEl.innerHTML += finalText.charAt(fIndex);
+                fIndex++;
+                setTimeout(typeWriterFinal, 55);
+            }
+        }
+
+        // 7. PARTICLES
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, particles = [], fireworks = [], isFireworkTime = false;
+        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+
+        class Heart {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * width; this.y = height + Math.random() * 100;
+                this.size = Math.random() * 12 + 6; 
+                this.speed = Math.random() * 0.4 + 0.15; 
+                this.opacity = Math.random() * 0.4 + 0.1;
+                this.wobble = Math.random() * Math.PI * 2; 
+                this.wobbleSpeed = Math.random() * 0.01 + 0.005; 
+            }
+            update() { 
+                this.y -= this.speed; 
+                this.wobble += this.wobbleSpeed; 
+                this.x += Math.sin(this.wobble) * 0.6; 
+                if (this.y < -50) this.reset(); 
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 120, 160, ${this.opacity})`; ctx.beginPath();
+                const t = this.size*0.3;
+                ctx.moveTo(this.x, this.y+t);
+                ctx.bezierCurveTo(this.x,this.y, this.x-this.size/2,this.y, this.x-this.size/2,this.y+t);
+                ctx.bezierCurveTo(this.x-this.size/2,this.y+(this.size+t)/2, this.x,this.y+(this.size+t)/2, this.x,this.y+this.size);
+                ctx.bezierCurveTo(this.x,this.y+(this.size+t)/2, this.x+this.size/2,this.y+(this.size+t)/2, this.x+this.size/2,this.y+t);
+                ctx.bezierCurveTo(this.x+this.size/2,this.y, this.x,this.y, this.x,this.y+t);
+                ctx.fill();
+            }
+        }
+        class Spark {
+            constructor(x, y, c) {
+                this.x = x; this.y = y; this.color = c;
+                const a = Math.random() * Math.PI * 2; const v = Math.random() * 8 + 3;
+                this.vx = Math.cos(a) * v; this.vy = Math.sin(a) * v;
+                this.alpha = 1; this.decay = Math.random() * 0.015 + 0.01; this.gravity = 0.12;
+            }
+            update() { this.vx *= 0.96; this.vy *= 0.96; this.vy += this.gravity; this.x += this.vx; this.y += this.vy; this.alpha -= this.decay; }
+            draw() { ctx.save(); ctx.globalAlpha = this.alpha; ctx.fillStyle = this.color; ctx.beginPath(); ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
+        }
+        for (let i = 0; i < 60; i++) particles.push(new Heart());
+        function launchFireworks() {
+            if(!isFireworkTime) return;
+            const x = Math.random() * width; const y = Math.random() * (height / 2.5);
+            const c = ['#ff4f8b', '#fff', '#ffdd55', '#a2d2ff'];
+            const color = c[Math.floor(Math.random() * c.length)];
+            for (let i = 0; i < 50; i++) fireworks.push(new Spark(x, y, color));
+        }
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            fireworks.forEach((f, i) => { f.update(); f.draw(); if (f.alpha <= 0) fireworks.splice(i, 1); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>
