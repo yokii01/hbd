@@ -113,12 +113,15 @@
         .submit-btn {
             background: linear-gradient(45deg, #ff4f8b, #d6336c);
             border: none; border-radius: 50%;
-            width: 55px; height: 55px;
+            width: 60px; height: 60px;
+            min-width: 60px; min-height: 60px;
             color: white; font-size: 1.2rem;
             cursor: pointer;
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 15px rgba(255, 79, 139, 0.4);
             transition: transform 0.2s, box-shadow 0.2s;
+            flex-shrink: 0;
+            padding: 0;
         }
         
         .submit-btn:active { transform: scale(0.9); }
@@ -139,12 +142,12 @@
         
         .unlocking .lock-heart-container {
             /* The Heart breathes in, then erupts */
-            animation: heartCinematicZoom 2s forwards cubic-bezier(0.8, 0, 0.1, 1);
+            animation: heartCinematicZoom 3.5s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         @keyframes heartCinematicZoom {
             0% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 25px rgba(255, 0, 80, 0.6)); }
-            25% { transform: scale(0.8); opacity: 1; filter: drop-shadow(0 0 10px rgba(255, 0, 80, 0.9)); } /* Anticipation deep breath */
+            20% { transform: scale(0.8); opacity: 1; filter: drop-shadow(0 0 10px rgba(255, 0, 80, 0.9)); } /* Anticipation deep breath */
             100% { transform: scale(150); opacity: 0; filter: blur(5px); } /* Massive smooth expansion */
         }
 
@@ -268,17 +271,36 @@
         #bg-canvas { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
         .content-layer { position: relative; z-index: 10; }
         .hidden { display: none !important; }
+
+        /* Fullscreen Button */
+        #fullscreen-btn {
+            position: fixed; top: 20px; right: 20px;
+            background: rgba(255, 79, 139, 0.3); border: 1px solid rgba(255, 79, 139, 0.5);
+            border-radius: 50%; width: 50px; height: 50px;
+            color: white; cursor: pointer; z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        #fullscreen-btn:hover { background: rgba(255, 79, 139, 0.6); transform: scale(1.1); }
+        #fullscreen-btn:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
     <!-- WRAPPER FOR ALIVE CONTENT (TO CRUMPLE IT) -->
     <div id="app-wrapper">
-        
+
+        <button id="fullscreen-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+            </svg>
+        </button>
+
         <canvas id="bg-canvas"></canvas>
         <audio id="bg-music" loop>
-            <!-- LOCAL FILE INJECTED HERE -->
-            <source src="https://github.com/yokii01/hbd/raw/refs/heads/main/perfect_ed_sheeran.mp3" type="audio/mp3">
+            <!-- AUDIO FROM GITHUB -->
+            <source src="https://github.com/yokii01/hbd/raw/refs/heads/main/audio.mpeg" type="audio/mpeg">
         </audio>
 
         <!-- STAGE 1: THE MAGIC WORD SCREEN -->
@@ -335,7 +357,7 @@
                 <div class="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-1 bg-gradient-to-r from-transparent via-pink-400 to-transparent opacity-50"></div>
                 <div class="float-img relative w-40 h-40 mx-auto mb-6 mt-2">
                     <div class="absolute inset-0 bg-blue-400 rounded-full blur-xl opacity-30"></div>
-                    <!-- LOCAL IMAGE INJECTED HERE -->
+                    <!-- IMAGE FROM GITHUB -->
                     <img src="https://github.com/yokii01/hbd/blob/main/image.jpg?raw=true" alt="Memory" class="relative w-full h-full object-cover rounded-full border-[4px] border-white/30 shadow-2xl">
                 </div>
                 <h1 class="handwriting text-5xl mb-2 text-pink-200 drop-shadow-lg">Happy Birthday</h1>
@@ -364,7 +386,7 @@
                 <h1 class="serif text-3xl mb-4 font-bold text-white drop-shadow-lg leading-tight">Will you be mine <br> forever?</h1>
                 <p class="serif text-pink-100/80 italic text-md mb-5 px-4">"Not just for today, but for every sunrise and sunset of my life."</p>
                 <div class="swise-container">
-                    <p class="swise-text">SWISS IS WAITING FOR US TO INVITE<br>US AS THE PERFECT COUPLE</p>
+                    <p class="swise-text">SWISE IS WAITING FOR US TO INVITE<br>US AS THE PERFECT COUPLE</p>
                 </div>
                 <div class="flex flex-col gap-3 w-full mt-4 relative">
                     <button id="yes-btn" onclick="acceptProposal(event)" class="btn-yes w-full py-4 rounded-full text-white font-bold text-lg tracking-wide shadow-lg">YES, I WILL! 💖</button>
@@ -406,20 +428,26 @@
         const audio = document.getElementById('bg-music');
         audio.volume = 0.5;
 
+        // Fullscreen Toggle Function
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    alert(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
         // 1. INPUT SCREEN LOGIC
         const acceptedWords = [
-            "pani puri", "ice cream", "money heist", "swiss", 
+            "pani puri", "ice cream", "money heist", "swiss",
             "switzerland", "!!", "!", "broo", "munch", "bro"
         ];
-        
+
         const inputField = document.getElementById('magic-word');
         const pwdScreen = document.getElementById('password-screen');
         const errorMsg = document.getElementById('error-msg');
-
-        // Play audio on first keystroke
-        inputField.addEventListener('input', () => {
-            if (audio.paused) audio.play().catch(() => {});
-        });
 
         // Handle Enter key
         inputField.addEventListener('keypress', function (e) {
@@ -429,30 +457,33 @@
         });
 
         function checkWord() {
-            if (audio.paused) audio.play().catch(() => {});
-
             const val = inputField.value.trim().toLowerCase();
-            
+
             if (acceptedWords.includes(val)) {
                 // Success - Hide error and trigger massive zoom
                 errorMsg.style.opacity = '0';
                 inputField.blur(); // dismiss keyboard on mobile
-                
+
                 pwdScreen.classList.add('unlocking');
-                
-                // Transition timing matches the 2s CSS animation
+
+                // Play audio after heart zoom completes (3.5 seconds)
+                setTimeout(() => {
+                    audio.play().catch(() => {});
+                }, 3500);
+
+                // Transition timing matches the 3.5s CSS animation
                 setTimeout(() => {
                     pwdScreen.style.opacity = '0';
-                    setTimeout(() => { 
-                        pwdScreen.style.display = 'none'; 
-                        startSlideshow(); 
+                    setTimeout(() => {
+                        pwdScreen.style.display = 'none';
+                        startSlideshow();
                     }, 800);
-                }, 1800);
+                }, 3000);
             } else {
                 // Error - Shake and show message
                 inputField.classList.add('shake');
                 errorMsg.style.opacity = '1';
-                
+
                 setTimeout(() => {
                     inputField.classList.remove('shake');
                 }, 400);
@@ -678,6 +709,4 @@
         animate();
     </script>
 </body>
-
 </html>
-
